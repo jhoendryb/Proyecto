@@ -1,63 +1,5 @@
 <?php
 include("./php/modelo.php");
-function clearInput($value, $conn)
-{
-    // Expresiones regulares para eliminar etiquetas y comentarios no deseados.
-    $search = [
-        '/<script[^>]*?>.*?<\/script>/si', // Remueve etiquetas script
-        /*'/<[\/\!]*?[^<>]*?>/si', // Remueve etiquetas html
-        '/<style[^>]*?>.*?<\/style>/siU', // Remueve etiquetas css*/
-        '/<![\s\S]*?--[ \t\n\r]*>/', // Remueve HTML multilínea.
-        '/SELECT.*?FROM/si', // Remueve SQL SELECT.
-        '/FROM.*?WHERE/si', // Remueve SQL FROM.
-        '/UPDATE.*?SET/si', // Remueve SQL UPDATE.
-        '/INSERT INTO.*?SET/si', // Remueve  SQL INSERT INTO.
-        '/DELETE FROM.*?/si', // Remueve SQL DELETE.
-        '/ALTER TABLE.*?/si' // Remueve SQL ALTER TABLE.
-    ];
-    if (is_array($value)) {
-        return array_map(function ($val) use ($conn) {
-            return clearInput($val, $conn);
-        }, $value);
-    } else {
-        return preg_replace($search, '', mysqli_real_escape_string($conn, $value));
-    }
-}
-
-function preparePost($post = array(), $conn, $Parse_Ignore = array(), $return_type = 'array')
-{
-    $data = "";
-    $indice = 0;
-    if (!is_array($post)) {
-        $data = clearInput($post, $conn);
-    } else {
-        $post = clearInput($post, $conn);
-        foreach ($post as $key => $value) {
-            if (!in_array($key, $Parse_Ignore) || (gettype($Parse_Ignore) === "boolean" && $Parse_Ignore === true)) {
-                if (gettype($Parse_Ignore) != "boolean") {
-                    if ($return_type == 'string') {
-                        $value = (is_array($value) ? json_encode($value) : $value);
-                        $data .= "{$key} = '{$value}'" . ($indice == (count($post) - 1) ? "" : ", ");
-                    } else if ($return_type == 'keyvalue') {
-                        $data .= "{$key}:{$value}" . ($indice == (count($post) - 1) ? "" : ", ");
-                    } else {
-                        $post[$key] = $value;
-                    }
-                } else {
-                    $post[$key] = $value;
-                }
-                $indice++;
-            }
-        }
-    }
-    if ($return_type == 'string') {
-        return $data;
-    } else if ($return_type == 'keyvalue') {
-        return $data;
-    } else {
-        return $post;
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -74,6 +16,11 @@ function preparePost($post = array(), $conn, $Parse_Ignore = array(), $return_ty
 </head>
 
 <body>
+
+    <div class="container-fluid">
+
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
     </script>
