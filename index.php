@@ -1,5 +1,6 @@
 <?php
 include("./php/modelo.php");
+$prueba = 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">
